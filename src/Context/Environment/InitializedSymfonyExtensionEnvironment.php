@@ -15,6 +15,7 @@ namespace FriendsOfBehat\SymfonyExtension\Context\Environment;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Exception\ContextNotFoundException;
+use Behat\Behat\Context\LateBoundContextMethodCallable;
 use Behat\Testwork\Call\Callee;
 use Behat\Testwork\Suite\Suite;
 use FriendsOfBehat\SymfonyExtension\Context\Environment\Handler\ContextServiceEnvironmentHandler;
@@ -54,6 +55,9 @@ final class InitializedSymfonyExtensionEnvironment implements SymfonyExtensionEn
     {
         $callable = $callee->getCallable();
 
+        if ($callable instanceof LateBoundContextMethodCallable) {
+            return $callable->bindTo($this->getContext($callable->contextClass));
+        }
         if (is_array($callable) && $callee->isAnInstanceMethod()) {
             return [$this->getContext($callable[0]), $callable[1]];
         }
